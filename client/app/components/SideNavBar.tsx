@@ -1,14 +1,25 @@
 "use client";
 import { ArrowBigRight, TimerReset, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import LanguageSelection from "./LanguageSelection";
+
+interface SideNavBarProps {
+  userCount: number;
+  expiresAt: number | null;
+  language: string;
+  setLanguage: React.Dispatch<React.SetStateAction<string>>;
+  setLastLanguage: React.Dispatch<React.SetStateAction<string>>;
+  isTranslating: boolean;
+}
 
 const SideNavBar = ({
   userCount,
   expiresAt,
-}: {
-  userCount: number;
-  expiresAt: number | null;
-}) => {
+  language,
+  setLanguage,
+  setLastLanguage,
+  isTranslating,
+}: SideNavBarProps) => {
   const [expandSideBar, setExpandSideBar] = useState(false);
   const [formattedTime, setFormattedTime] = useState("00:00");
   const [isLowTime, setIsLowTime] = useState(false);
@@ -46,6 +57,7 @@ const SideNavBar = ({
         overflow-hidden
         transition-all duration-300
         w-12 md:w-64
+        text-sm
       `}
     >
       <div
@@ -78,24 +90,26 @@ const SideNavBar = ({
 
         {/* Users */}
         <div className="flex items-center gap-x-4">
-          <Users size={18} />
+          {expandSideBar ? "" : <Users size={18} className="md:hidden" />}
+
           <span className={`${expandSideBar ? "block" : "hidden"} md:block`}>
-            {userCount ? userCount : 0}
+            USERS- {userCount ? userCount : 0}
           </span>
         </div>
+
+        {/* Select Language */}
+        <LanguageSelection
+          language={language}
+          setLanguage={setLanguage}
+          setLastLanguage={setLastLanguage}
+          expandSideBar={expandSideBar}
+          isTranslating={isTranslating}
+        />
 
         {/* Timer */}
 
         <div
-          className={`${expandSideBar && "timer"} md:p-3
-  md:rounded-md
-  md:border
-  md:text-xl 
-  md:font-terminal  
-  md:text-center
- md:bg-primaryBackground
- ${isLowTime ? "md:border-errorRed" : "md:border-terminalGreen"}
-  mb-12 md:mb-0 mt-auto`}
+          className={`${expandSideBar && "timer"} md:p-3 md:rounded-md md:border md:text-xl md:font-terminal md:text-center md:bg-primaryBackground ${isLowTime ? "md:border-errorRed" : "md:border-terminalGreen"} mb-12 md:mb-0 mt-auto`}
         >
           {expandSideBar ? "" : <TimerReset size={18} className="md:hidden" />}
           <p className={`${expandSideBar ? "block" : "hidden"} md:block`}>

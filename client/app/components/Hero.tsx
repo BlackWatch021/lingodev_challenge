@@ -7,7 +7,7 @@ import { useChat } from "@/hooks/useChat";
 
 const Hero = () => {
   const [roomName, setRoomName] = useState("");
-  const [durationMinutes, setDurationMinutes] = useState("5");
+  const [durationMinutes, setDurationMinutes] = useState("30");
   const { createRoom, roomId } = useChat();
 
   const handleRoomCreation = (e: React.ChangeEvent) => {
@@ -28,7 +28,10 @@ const Hero = () => {
           Just pure data exchange.
         </p>
         {/* Create room form */}
-        <div className="w-2/3 md:w-1/2 text-sm font-mono rounded-md bg-secondaryBackground py-6 px-8 border-terminalGreenSecondary border shadow-box ">
+        <div
+          className="w-2/3 md:w-1/2 text-sm font-mono rounded-md bg-secondaryBackground py-6 px-8 border-terminalGreenSecondary 
+        border shadow-box "
+        >
           <div className="flex text-md md:text-xl gap-1 items-center">
             <CirclePlus size={16} />
             <p className="uppercase">initize_terminal_config</p>
@@ -42,7 +45,7 @@ const Hero = () => {
                 htmlFor="identifier"
                 className="uppercase text-textSecondary"
               >
-                ROOM IDENTIFIER
+                ROOM INITIALIZATION
               </label>
               <input
                 id="identifier"

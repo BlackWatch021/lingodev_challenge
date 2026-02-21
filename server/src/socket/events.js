@@ -134,7 +134,8 @@ const socketEvent = (io) => {
         // };
 
         // Broadcast message to room
-        io.to(roomId).emit("receive_message", messageData);
+        // io.to(roomId).emit("receive_message", messageData);
+        socket.to(roomId).emit("receive_message", messageData);
 
         callback({ success: true, message: "Message send successfully" });
       } catch (error) {
@@ -188,6 +189,7 @@ const socketEvent = (io) => {
             success: false,
             message: "Room doesn't exists",
           });
+          console.log("Room Doesn't exists");
           console.log(`🗑️  Room auto-disposed (empty): ${roomId}`);
         }
       }

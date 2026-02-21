@@ -14,8 +14,11 @@ const Chat = () => {
   const [userMessage, setUserMessage] = useState("");
   const [askUserName, setAskUserName] = useState(false);
   const [userCount, setUserCount] = useState(0);
+  const [language, setLanguage] = useState("en");
+  const [lastLanguge, setLastLanguage] = useState("en");
+  const [isTranslating, setIsTranslating] = useState(false);
   const [allMessages, setAllMessages] = useState<
-    { userName: string; message: string; system?: string }[]
+    { name: string; text: string; system?: string }[]
   >([]);
 
   const { socket, joinRoom, roomExists, roomStatus, sendMessage, expiresAt } =
@@ -25,8 +28,41 @@ const Chat = () => {
     if (!userMessage.trim()) return; // avoid empty messages
     setUserMessage("");
     sendMessage(roomId, userMessage);
+    setAllMessages((prev) => [...prev, { name: userName, text: userMessage }]);
   };
 
+  // language translation, initial translation
+  useEffect(() => {
+    if (!allMessages.length || language === lastLanguge) return;
+    setIsTranslating(true);
+
+    const translateChat = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/translation/bulk`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: allMessages,
+              currentLanguage: lastLanguge,
+              translateTo: language,
+            }),
+          },
+        );
+        const data = await response.json();
+        console.log("TRANSLATION API RESPOSNE", data);
+        setAllMessages(data.data);
+      } catch (error) {
+        console.error({ error });
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+    translateChat();
+  }, [language]);
+
+  // Asking/setting user name
   useEffect(() => {
     const savedUser = localStorage.getItem("username");
 
@@ -46,34 +82,71 @@ const Chat = () => {
     joinRoom(roomId, userName);
   }, [socket, userName, roomId]);
 
-  //isten for messages (with cleanup)
+  //Listen for messages (with cleanup)
   useEffect(() => {
     if (!socket) return;
 
     const handleReceive = (data: any) => {
-      setAllMessages((prev) => [...prev, data]);
+      if (lastLanguge === language) {
+        setAllMessages((prev) => [
+          ...prev,
+          { name: data.userName, text: data.message },
+        ]);
+        return;
+      } else if (lastLanguge !== language) {
+        const translateChat = async () => {
+          setIsTranslating(true);
+          try {
+            console.log("new message", data.message);
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/translation/chunk`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  message: data.message,
+                  currentLanguage: lastLanguge,
+                  translateTo: language,
+                }),
+              },
+            );
+            const responseData = await response.json();
+            console.log("SINGLE TRANSLATION API RESPOSNE", responseData);
+            setAllMessages((prev) => [
+              ...prev,
+              { name: data.userName, text: responseData.data },
+            ]);
+          } catch (error) {
+            console.error({ error });
+          } finally {
+            setIsTranslating(false);
+          }
+        };
+        translateChat();
+      }
     };
 
     socket.on("receive_message", handleReceive);
+
+    // Socket user joined
     socket.on("user_joined", (data) => {
-      console.log("User joined data", data);
       setAllMessages((prev) => [
         ...prev,
         {
-          userName: data.userName,
-          message: "",
+          name: data.userName,
+          text: "",
           system: "user_joined",
         },
       ]);
       setUserCount(data.userCount);
     });
+    // Socket user left
     socket.on("user_left", (data) => {
-      console.log("User left data", data);
       setAllMessages((prev) => [
         ...prev,
         {
-          userName: data.userName,
-          message: "",
+          name: data.userName,
+          text: "",
           system: "user_left",
         },
       ]);
@@ -83,8 +156,9 @@ const Chat = () => {
     return () => {
       socket.off("receive_message", handleReceive);
     };
-  }, [socket]);
+  }, [socket, language, lastLanguge]);
 
+  // Ask user name
   if (askUserName) {
     return (
       <UserName setUserName={setUserName} setAskUserName={setAskUserName} />
@@ -115,15 +189,24 @@ const Chat = () => {
       </div>
     );
   }
+
   return (
     <div className="flex h-[93.5vh]">
-      <SideNavBar userCount={userCount} expiresAt={expiresAt} />
+      <SideNavBar
+        userCount={userCount}
+        expiresAt={expiresAt}
+        language={language}
+        setLanguage={setLanguage}
+        setLastLanguage={setLastLanguage}
+        isTranslating={isTranslating}
+      />
       <ChatSection
         userMessage={userMessage}
         setUserMessage={setUserMessage}
         allMessages={allMessages}
         userName={userName}
         sendMessageSocket={sendMessageSocket}
+        isTranslating={isTranslating}
       />
     </div>
   );

@@ -1,12 +1,13 @@
 import { BadgePlus, Send } from "lucide-react";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface ChatProps {
   userMessage: string;
   setUserMessage: React.Dispatch<React.SetStateAction<string>>;
   userName: string;
-  allMessages: { userName: string; message: string; system?: string }[];
+  allMessages: { name: string; text: string; system?: string }[];
   sendMessageSocket: () => void;
+  isTranslating: boolean;
 }
 
 const ChatSection = ({
@@ -15,7 +16,14 @@ const ChatSection = ({
   allMessages,
   userName,
   sendMessageSocket,
+  isTranslating,
 }: ChatProps) => {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [allMessages]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -31,7 +39,7 @@ const ChatSection = ({
             return (
               <div
                 key={index}
-                className={`w-full flex ${data.system ? "justify-start" : data.userName.toLowerCase() === userName.toLowerCase() ? "justify-end" : "justify-start"}`}
+                className={`w-full flex ${data.system ? "justify-start" : data.name.toLowerCase() === userName.toLowerCase() ? "justify-end" : "justify-start"}`}
               >
                 {/* SYSTEM MESSAGE */}
                 {data.system ? (
@@ -41,7 +49,7 @@ const ChatSection = ({
                       <p className="text-terminalGreen opacity-40">
                         &gt;&gt; User{" "}
                         <span className="font-bold italic underline underline-offset-1">
-                          {data.userName}
+                          {data.name}
                         </span>{" "}
                         Joined the chat
                       </p>
@@ -51,7 +59,7 @@ const ChatSection = ({
                       <p className="text-errorRed opacity-80">
                         &gt;&gt; User{" "}
                         <span className="font-bold italic underline underline-offset-1">
-                          {data.userName}
+                          {data.name}
                         </span>{" "}
                         LEFT the chat
                       </p>
@@ -61,20 +69,21 @@ const ChatSection = ({
                   // CHAT MESSAGES
                   <div className="max-w-[70%] bg-secondaryBackground rounded-md px-4 py-2">
                     <p
-                      className={`${data.userName.toLowerCase() === userName.toLowerCase() && "text-textSecondary"}`}
+                      className={`${data.name.toLowerCase() === userName.toLowerCase() && "text-textSecondary"}`}
                     >
-                      {data.message}
+                      {data.text}
                     </p>
 
-                    {data.userName.toLowerCase() === userName.toLowerCase() ? (
+                    {data.name.toLowerCase() === userName.toLowerCase() ? (
                       ""
                     ) : (
                       <p className="text-xs mt-1 text-textSecondary">
-                        {data.userName}
+                        {data.name}
                       </p>
                     )}
                   </div>
                 )}
+                <div ref={bottomRef} />
               </div>
             );
           })}
@@ -84,6 +93,7 @@ const ChatSection = ({
         <div className="flex  px-2 py-1">
           <textarea
             placeholder="...Your message will go here"
+            disabled={isTranslating}
             rows={3}
             className="bg-primaryBackground rounded-xl outline-none px-2 py-2 w-full flex-1 resize-none"
             value={userMessage}
