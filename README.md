@@ -1,135 +1,199 @@
-# **TERMINAL47**
+# TERMINAL47
 
-Anonymous, ephemeral real-time chat with live translation. No signup, link-only access. Hacker terminal UI. Switch languages mid-chat—history bulk-translates instantly.
+Anonymous, ephemeral real-time chat with live translation.  
+No signup. Link-only access. Hacker terminal UI.  
+Switch languages mid-chat — history bulk-translates instantly.
 
-<img src="/assets/Cover.png" alt="Terminal47 Chat Interface" width="800"/>
-✨ Features
- Zero-friction access - Share link, join as "Agent-47"
+---
 
-> Real-time chat - Socket.io broadcasts
-> Live translation - Lingo.dev (bulk history + streaming new messages)
-> User presence - Live count + join/leave notifications
-> Room expiry - Auto-destruct countdown
-> Hacker terminal UI - Green monospace glow
-> Anonymous - No auth, localStorage userName
-> TypeScript - Full type safety
-> Mobile-responsive - Collapsible sidebar
-> Typing indicators - Next up!
+## ✨ Features
 
-** 🛠️ Tech Stack **
-_Frontend Backend Other_
-Next.js 15 Express.js Socket.io
-TypeScript JavaScript Lingo.dev SDK
-Tailwind CSS dotenv Lucide React
-localStorage CORS JetBrains Mono
-🚀 Quick Start
-Backend
-bash
-cd backend
+- **Zero-friction access** — Share link, join as `Agent-47`
+- **Real-time chat** — Socket.io broadcasts
+- **Live translation** — Bulk history + streaming new messages
+- **User presence** — Live count + join/leave notifications
+- **Room expiry** — Auto-destruct countdown
+- **Hacker terminal UI** — Green monospace glow aesthetic
+- **Anonymous** — No authentication (Agent names via localStorage)
+- **TypeScript** — End-to-end type safety
+- **Mobile responsive** — Collapsible sidebar
+- **Typing indicators**
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- Socket.io Client
+- Lucide React
+- JetBrains Mono
+
+### Backend
+
+- Express.js
+- Socket.io
+- JavaScript
+- dotenv
+- CORS
+
+### Translation
+
+- Lingo.dev SDK
+
+---
+
+## 🚀 Quick Start
+
+---
+
+### 1️⃣ Backend Setup
+
+```bash
+cd server
 cp .env.example .env
-
-## Edit .env with your LINGO_DEV_API_KEY
-
-```
-npm install
-npm run dev
-http://localhost:8000
 ```
 
-## _ Frontend _
+Edit `.env`:
 
-```
-bash
-cd client
-cp .env.local.example .env.local
-```
-
-## Edit .env.local with NEXT_PUBLIC_BACKEND_URL
-
-npm install
-npm run dev
-
-## http://localhost:3000
-
-Environment Variables
-backend/.env:
-
-text
+```env
 PORT=8000
 LINGO_DEV_API_KEY=your_key_here
 CLIENT_URL=http://localhost:3000
-frontend/.env.local:
+```
 
-text
+Run backend:
+
+```bash
+npm install
+npm run dev
+```
+
+Backend runs at:
+
+```
+http://localhost:8000
+```
+
+---
+
+### 2️⃣ Frontend Setup
+
+```bash
+cd client
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-NEXT_PUBLIC_SOCKET_URL=http://localhost:8000
+```
 
-## **🧪 Test Flow **
+Run frontend:
 
-Open http://localhost:3000
+```bash
+npm install
+npm run dev
+```
 
-Create room → Copy generated link /chat/abc123
+Frontend runs at:
 
-Share link → Open in incognito → Join as anon agent
+```
+http://localhost:3000
+```
 
-Chat → See "Agent-89 joined channel" system message
+---
 
-Switch language → Watch history translate instantly ✨
+## 🧪 Test Flow
 
-Timer → Red warning at 1min → Room auto-destructs
+1. Open `http://localhost:3000`
+2. Create a room → Copy generated link `/chat/abc123`
+3. Open link in incognito
+4. Join as anonymous Agent
+5. Start chatting
+6. Switch language → Entire history translates instantly ✨
+7. Timer hits 1 min → Red warning
+8. Timer expires → Room auto-destructs permanently
 
-<img src="/assets/img2.png" alt="Terminal47 Chat Interface" width="800"/>
+---
 
-## 🌐 **Translation Flow**
+## 🌐 Translation Flow
 
-text
+```
 Language Switch (SideNavBar)
-↓
-useEffect triggers /auth/translation/bulk
-↓
+        ↓
+useEffect triggers → /auth/translation/bulk
+        ↓
 allMessages[] → Lingo.dev → setAllMessages(translated)
-↓
-New Message → socket.on → /auth/translation/chunk → Auto-translate
-📱 Demo Flow
-text
+        ↓
+New message → socket.on()
+        ↓
+/auth/translation/chunk
+        ↓
+Auto-translated before render
+```
 
-1. localhost:3000 → Create room → /chat/abc123
-2. Share abc123 → "Agent-89 joined channel"
-3. English chat → Switch Hindi → History translates!
-4. Timer 00:47 → RED warning → Room gone forever
+---
 
-## ** 🔒 Privacy First**
+## 🔒 Privacy First
 
-No database - Pure in-memory rooms
-No authentication - Anonymous Agent names from localStorage
-Link-only access - RoomId = your access key
-Ephemeral data - Erased on expiry/disconnect
-No logs - Zero persistence by design
+- No database
+- No authentication
+- No message logs
+- Link-only access (Room ID = access key)
+- Pure in-memory storage
+- Data erased automatically on expiry
+- Zero persistence by design
 
-## **✅ V1 Checklist **
+---
 
-Real-time messaging (Socket.io)
-User presence tracking + system messages
-Live translation (bulk history + single streaming)
-Room expiry countdown (accurate timer)
-Hacker terminal UI (green glow, monospace)
-Anonymous link-based access
-Mobile-responsive sidebar
-TypeScript end-to-end
-Production error states (room not found)
+## ✅ V1 Checklist
 
-## **🔮Future Plans**
+- [x] Real-time messaging (Socket.io)
+- [x] User presence tracking + system messages
+- [x] Live translation (bulk + streaming)
+- [x] Accurate room expiry countdown
+- [x] Hacker terminal UI
+- [x] Anonymous link-based access
+- [x] Mobile responsive layout
+- [x] TypeScript end-to-end
+- [x] Production-safe error states
 
-V2 Features
-Redis TTL room persistence
-Room passwords
-File/image sharing
-Terminal commands (/clear, /name Agent99)
-Typing indicators
-Message history (last 50/room)
+---
 
-## **Credits**
+## 🔮 Future Plans
 
-Lingo.dev - Lightning-fast translation SDK
-Socket.io - Bulletproof real-time communication
-Next.js 16 - Full-stack development joy
+### V2 Roadmap
+
+- Redis TTL room persistence
+- Room passwords
+- File/image sharing
+- Terminal commands (`/clear`, `/name Agent99`)
+- Advanced typing indicators
+- Optional limited message history (last 50 messages)
+
+---
+
+## 🧠 Philosophy
+
+TERMINAL47 is designed around:
+
+- Ephemerality
+- Identity preservation
+- Stateless architecture
+- Minimal attack surface
+- Zero-data liability
+
+This is a privacy-first communication experiment — not a traditional chat app.
+
+---
+
+## 🙌 Credits
+
+- Lingo.dev — Translation SDK
+- Socket.io — Real-time engine
+- Next.js — Full-stack framework
