@@ -4,6 +4,8 @@ Anonymous, ephemeral real-time chat with live translation.
 No signup. Link-only access. Hacker terminal UI.  
 Switch languages mid-chat — history bulk-translates instantly.
 
+<img src="/assets/Cover.png" alt="Terminal47 Chat Interface" width="800"/>
+
 ---
 
 ## ✨ Features
@@ -122,6 +124,8 @@ http://localhost:3000
 ---
 
 ## 🌐 Translation Flow
+
+<img src="/assets/img2.png" alt="Terminal47 Chat Interface" width="800"/>
 
 ```
 Language Switch (SideNavBar)
